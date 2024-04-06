@@ -6,3 +6,4 @@ env/
 *.gz
 *.fdb_latexmk
 data/
+.idea/
