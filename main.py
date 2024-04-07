@@ -33,9 +33,10 @@ if __name__ == "__main__":
         assert False, "Unknown algorithm"
 
     train_loader, test_loader, val_loader = data.return_loader(args)
-    
-    model, train_hist, val_hist = train(model, train_loader, val_loader, optimizer, args)
     model.apply(custom_weight_init)
+
+    model, train_hist, val_hist = train(model, train_loader, val_loader, optimizer, args)
+    
     fig, ax = plt.subplots(2, 1)
     ax[0].plot(val_hist, label="Validation per batch")
     ax[1].plot(train_hist, label = "Training per sample")
