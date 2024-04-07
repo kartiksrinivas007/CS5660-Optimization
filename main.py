@@ -35,6 +35,9 @@ if __name__ == "__main__":
     train_loader, test_loader, val_loader = data.return_loader(args)
     model.apply(custom_weight_init)
 
+    print(model.state_dict())
+    
+
     model, train_hist, val_hist = train(model, train_loader, val_loader, optimizer, args)
     
     fig, ax = plt.subplots(2, 1)

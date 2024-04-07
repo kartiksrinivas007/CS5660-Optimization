@@ -21,10 +21,11 @@ def train(model, train_loader, val_loader, optim, args):
             train_loss += loss.item()
             train_hist.append(train_loss/x.shape[0]) # train_loss per SAMPLE
             # breakpoint()
-        if (epoch %1 == 0):
-            print(f"Epoch {epoch}: {loss.item()}")
+        if (epoch %2 == 0):
             val_loss = validate(model, val_loader, args)
             val_hist.append(val_loss) # val_loss per BATCH
+            print(f"Epoch {epoch}: Validation Loss = {val_loss}")
+
     return model, train_hist, val_hist
 
 def validate(model, val_loader, args):
