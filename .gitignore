@@ -7,3 +7,4 @@ env/
 *.fdb_latexmk
 data/
 .idea/
+__pycache__/
