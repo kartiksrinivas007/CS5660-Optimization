@@ -1,13 +1,9 @@
-from Dataset import data
-from Algorithms import *
 import torch.nn as nn
 from tqdm import tqdm
-from torchsummary import summary
 import torch 
 
 
 def train(model, train_loader, val_loader, optim, args):
-    print(summary(model, (3, 32, 32)))
     model.train()
     train_hist = []
     val_hist = []
@@ -42,4 +38,4 @@ def validate(model, val_loader, args):
             output = model(x)
             loss = nn.CrossEntropyLoss()(output, y)
             total_loss += loss.item()
-    return (total_loss)/len(val_loader)
+    return total_loss /len(val_loader)

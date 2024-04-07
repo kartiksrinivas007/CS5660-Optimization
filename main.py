@@ -1,4 +1,4 @@
-from Algorithms import *
+from Algorithms import smd
 from Dataset import data
 import argparse
 import torchvision as tv
@@ -16,6 +16,7 @@ if __name__ == "__main__":
     parser.add_argument('--num_epochs', type=int, default=3, help='The number of epochs')
     parser.add_argument('--lr', type=float, default=0.01, help='The learning rate')
     parser.add_argument('--device', type=str, default="cuda", help='The device to run on')
+    parser.add_argument('--q_norm', type=float, default=2, help='The q norm')
     args = parser.parse_args()
     
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -23,7 +24,13 @@ if __name__ == "__main__":
     
     model = tv.models.resnet18()
     model = model.to(device)
-    optimizer = optim.SGD(model.parameters(), lr=args.lr)
+    if args.algorithm == "sgd":
+        optimizer = optim.SGD(model.parameters(), lr=args.lr)
+    elif args.algorithm == "smd":
+        optimizer = smd.SMD(model.parameters(), lr=args.lr, q=args.q_norm)
+    else:
+        assert False, "Unknown algorithm"
+
     train_loader, test_loader, val_loader = data.return_loader(args)
     
     model, train_hist, val_hist = train(model, train_loader, val_loader, optimizer, args)
