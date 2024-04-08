@@ -28,7 +28,7 @@ def mirror_descent(q, accs):
 
 if __name__ == "__main__":
     p1 = Process(target=gradient, args=(sgd,))
-    p2 = Process(target=mirror_descent, args=(1, smd1))
+    p2 = Process(target=mirror_descent, args=(1.001, smd1))
     p3 = Process(target=mirror_descent, args=(3, smd3))
     p4 = Process(target=mirror_descent, args=(8, smd8))
     p5 = Process(target=mirror_descent, args=(10, smd10))
