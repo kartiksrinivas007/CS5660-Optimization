@@ -25,10 +25,10 @@ def train(model, train_loader, val_loader, optim, args):
         val_loss = validate(model, val_loader, args)
         val_hist.append(val_loss) # val_loss per BATCH
         print(f"Epoch {epoch}: Validation Loss = {val_loss}")
-        if epoch > 2:
-            if val_hist[-1] >= val_hist[-2] >= val_hist[-3]:
-                print("Early stopping")
-                break
+        # if epoch > 2:
+        #     if val_hist[-1] >= val_hist[-2] >= val_hist[-3]:
+        #         print("Early stopping")
+        #         break
 
     return model, train_hist, val_hist
 
