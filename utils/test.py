@@ -11,6 +11,6 @@ def test(model, test_loader, args):
             x = x.to(args.device)
             y = y.to(args.device)
             output = model(x)
-            acc = Accuracy(output, y)
+            acc = Accuracy(task="multiclass", num_classes=10).to(device=args.device)(output, y)
             total_acc += acc.item()
     return total_acc /len(test_loader)
