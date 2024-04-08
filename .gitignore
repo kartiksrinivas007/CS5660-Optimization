@@ -9,3 +9,4 @@ data/
 .idea/
 *.pyc
 *.png
+result.txt

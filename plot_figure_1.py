@@ -9,8 +9,8 @@ num_experiments = 5
 def gradient(accs):
     for i in range(num_experiments):
         args = argument_parser()
-        model, test_loader = main(args)
         args.num_epochs = 9
+        model, test_loader = main(args)
         accs.append(test(model, test_loader, args))
     print(f"SGD: {accs}")
 
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     sgd = manager.list()
 
     p1 = Process(target=gradient, args=(sgd,))
-    p2 = Process(target=mirror_descent, args=(1.01, smd1,))
+    p2 = Process(target=mirror_descent, args=(1.02, smd1,))
     p3 = Process(target=mirror_descent, args=(3, smd3,))
     p4 = Process(target=mirror_descent, args=(8, smd8,))
     p5 = Process(target=mirror_descent, args=(10, smd10,))
