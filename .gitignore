@@ -7,5 +7,5 @@ env/
 *.fdb_latexmk
 data/
 .idea/
-__pycache__/
+*.pyc
 *.png
