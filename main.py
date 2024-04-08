@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from init import custom_weight_init
 
 def main(args=None):
-
+    args_copy = args
     if args is None:
         args = argument_parser()
 
@@ -33,12 +33,13 @@ def main(args=None):
 
     model, train_hist, val_hist = train(model, train_loader, val_loader, optimizer, args)
 
-    fig, ax = plt.subplots(2, 1)
-    ax[0].plot(val_hist, label="Validation per batch")
-    ax[1].plot(train_hist, label="Training per sample")
-    plt.legend()
-    plt.savefig(f"plot_{args.lr}.png")
-    plt.show()
+    if args_copy is None:
+        fig, ax = plt.subplots(2, 1)
+        ax[0].plot(val_hist, label="Validation per batch")
+        ax[1].plot(train_hist, label="Training per sample")
+        plt.legend()
+        plt.savefig(f"plot_{args.lr}.png")
+        plt.show()
     return model, test_loader
 
 if __name__ == "__main__":
