@@ -8,22 +8,21 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 from init import custom_weight_init
 
-if __name__ == "__main__":
-    
+def main():
     parser = argparse.ArgumentParser(description='Run the algorithms')
     parser.add_argument('--algorithm', type=str, default='sgd', help='The algorithm to run')
     parser.add_argument('--dataset', type=str, default='cifar10', help='The dataset to use')
     parser.add_argument('--batch_size', type=int, default=32, help='The batch size')
-    parser.add_argument('--num_epochs', type=int, default=3, help='The number of epochs')
+    parser.add_argument('--num_epochs', type=int, default=30, help='The number of epochs')
     parser.add_argument('--lr', type=float, default=0.01, help='The learning rate')
     parser.add_argument('--device', type=str, default="cuda", help='The device to run on')
     parser.add_argument('--q_norm', type=float, default=2, help='The q norm')
     args = parser.parse_args()
-    
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     args.device = device
     print(f"Using {device}")
-    
+
     model = tv.models.resnet18()
     model = model.to(device)
     if args.algorithm == "sgd":
@@ -37,18 +36,16 @@ if __name__ == "__main__":
     model.apply(custom_weight_init)
 
     # print(model.state_dict())
-    
 
     model, train_hist, val_hist = train(model, train_loader, val_loader, optimizer, args)
-    
+
     fig, ax = plt.subplots(2, 1)
     ax[0].plot(val_hist, label="Validation per batch")
-    ax[1].plot(train_hist, label = "Training per sample")
+    ax[1].plot(train_hist, label="Training per sample")
     plt.legend()
     plt.savefig(f"plot_{args.lr}.png")
     plt.show()
+    return model, test_loader, args
 
-    
-    
-    
-    
+if __name__ == "__main__":
+    main()
