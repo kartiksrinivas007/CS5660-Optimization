@@ -17,7 +17,7 @@ def main(args=None):
     args.device = device
     print(f"Using {device}")
 
-    model = tv.models.resnet18()
+    model = tv.models.resnet18(num_classes=10)
     model = model.to(device)
     if args.algorithm == "sgd":
         optimizer = optim.SGD(model.parameters(), lr=args.lr)
