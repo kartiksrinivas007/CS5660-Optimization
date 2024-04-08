@@ -21,6 +21,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     device = "cuda" if torch.cuda.is_available() else "cpu"
+    args.device = device
     print(f"Using {device}")
     
     model = tv.models.resnet18()
@@ -35,7 +36,7 @@ if __name__ == "__main__":
     train_loader, test_loader, val_loader = data.return_loader(args)
     model.apply(custom_weight_init)
 
-    print(model.state_dict())
+    # print(model.state_dict())
     
 
     model, train_hist, val_hist = train(model, train_loader, val_loader, optimizer, args)
