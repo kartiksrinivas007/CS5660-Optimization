@@ -10,7 +10,7 @@ def gradient(accs):
     for i in range(num_experiments):
         args = argument_parser()
         model, test_loader = main(args)
-        args.num_epochs = 10
+        args.num_epochs = 9
         accs.append(test(model, test_loader, args))
     print(f"SGD: {accs}")
 
@@ -19,7 +19,7 @@ def mirror_descent(q, accs):
         args = argument_parser()
         args.algorithm = "smd"
         args.q_norm = q
-        args.num_epochs = 10
+        args.num_epochs = 9
         model, test_loader = main(args)
         accs.append(test(model, test_loader, args))
     print(f"SMD q={q}: {accs}")
