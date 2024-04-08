@@ -47,6 +47,8 @@ if __name__ == "__main__":
     plt.legend()
     plt.savefig(f"plot_{args.lr}.png")
     plt.show()
+
+    
     
     
     

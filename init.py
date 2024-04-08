@@ -1,8 +1,6 @@
 import torch.nn as nn
 import torch
 
-
-
 def custom_weight_init(m):
     # make cases if m is either a conv layer or not!
     # breakpoint()
@@ -14,4 +12,3 @@ def custom_weight_init(m):
         nn.init.uniform_(m.weight, a=-0.01, b=0.01)
         if m.bias is not None:
             nn.init.uniform_(m.bias, a=-0.01, b=0.01)
-    pass
