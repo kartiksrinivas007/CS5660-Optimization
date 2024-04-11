@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from init import custom_weight_init
 
 def main(args=None):
-    args_copy = args
+    args_copy = args # this is not a copy, you should deep copy it if you want a copy, I think changing args_copy will change args as well
     if args is None:
         args = argument_parser()
 
@@ -43,4 +43,4 @@ def main(args=None):
     return model, test_loader
 
 if __name__ == "__main__":
-    main()
+    main() # passing no arguments here for some reason
