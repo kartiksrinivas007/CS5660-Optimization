@@ -1,4 +1,4 @@
-from Algorithms import smd
+from Algorithms import smd, prox_smd
 from Dataset import data
 import torchvision as tv
 from utils.train import train
@@ -23,6 +23,8 @@ def main(args=None):
         optimizer = optim.SGD(model.parameters(), lr=args.lr)
     elif args.algorithm == "smd":
         optimizer = smd.SMD(model.parameters(), lr=args.lr, q=args.q_norm)
+    elif args.algorithm == "prox_smd":
+        optimizer = prox_smd.PROXSMD(model.parameters(), lr=args.lr, q=args.q_norm, reg=args.reg)
     else:
         assert False, "Unknown algorithm"
 
