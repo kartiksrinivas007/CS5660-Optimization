@@ -1,5 +1,6 @@
 \section*{Theoretical Results}
 
+\subsection*{Mirror Descent}
 The function $\Phi(x) = \frac{1}{p} \| x \|_p^p$ is strongly convex with a parameter.
 
 The map used in the problem takes the gradients to a different space namely the dual space of the system. 
@@ -26,3 +27,34 @@ Therefore the update step is
 \label{eq:mirror_descent}
     x_{t+1} =  | \nabla w(x_t) - \eta \nabla f(x_t) |^{\frac{1}{p-1}} \text{sgn}(\nabla w(x_t) - \eta \nabla f(x_t))
 \end{equation}
+
+\subsection*{Proximal Mirror Descent}
+
+For the prox case the only additional update in the equation comes through the regularized norm  $\lambda \| x \|_1$
+The additional gradient is $\lambda \text{sgn}(x)$, which gets added to yield 
+
+$$
+y_j = \text{sgn}(x_j) ( \lambda +  |x_j^*|^{p-1} )
+$$
+
+Hence we get 
+
+$$
+    x_j = \text{sgn}(y_j) \max(0, |y_j| - \lambda)^{\frac{1}{p-1}}
+$$
+
+Note how the optimal solution to the problem can be seen compnent wise, since the function $\frac{1}{p} \| x \|^p$ can be broken component-wise into several parts.
+The argmax would be a cartesian product of each component wise optimal $x_j^*$.
+
+
+\begin{align*}
+    f'(x_j) &= \nabla_{x_j} (x_jy_j  - \frac{1}{p} |x_j|^p - |x_j|) \\\
+    &= y_j - |x_j|^{p-1} - \text{sgn}(x_j) \\
+    &= \begin{cases} 
+        < 0 & x_j\leq 0, |y_j| < \lambda \\
+        > 0  & x_j \geq 0, |y_j| < \lambda  \\
+     \end{cases}\\
+    &= 0 \text{ if } |y_j| \ge \lambda \text{ and } y_j = \text{sgn}(x_j) ( \lambda + |x_j|^{p-1})\\
+\end{align*}
+
+
