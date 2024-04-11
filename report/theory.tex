@@ -30,31 +30,38 @@ Therefore the update step is
 
 \subsection*{Proximal Mirror Descent}
 
-For the prox case the only additional update in the equation comes through the regularized norm  $\lambda \| x \|_1$
-The additional gradient is $\lambda \text{sgn}(x)$, which gets added to yield 
+For the proximal case the only additional update in the equation comes through the regularized norm  $\mu \| x \|_1$
+The additional gradient is $\mu \text{ sgn }(x)$, which gets added to yield 
 
 $$
-y_j = \text{sgn}(x_j) ( \lambda +  |x_j^*|^{p-1} )
+y_j = \text{sgn}(x_j) ( \mu +  |x_j^*|^{p-1} )
 $$
 
 Hence we get 
 
 $$
-    x_j = \text{sgn}(y_j) \max(0, |y_j| - \lambda)^{\frac{1}{p-1}}
+    x_j = \text{sgn}(y_j) \max(0, |y_j| - \mu)^{\frac{1}{p-1}}
 $$
 
-Note how the optimal solution to the problem can be seen compnent wise, since the function $\frac{1}{p} \| x \|^p$ can be broken component-wise into several parts.
-The argmax would be a cartesian product of each component wise optimal $x_j^*$.
+Note how the optimal solution to the problem can be seen component wise, since the function $\frac{1}{p} \| x \|^p$ can be broken component-wise into several parts.
+The argmax would be a cartesian product of each component wise optimal $x_j^*$. The stationary point will exist only when $|y_j| \le \mu$
 
 
 \begin{align*}
     f'(x_j) &= \nabla_{x_j} (x_jy_j  - \frac{1}{p} |x_j|^p - |x_j|) \\\
     &= y_j - |x_j|^{p-1} - \text{sgn}(x_j) \\
     &= \begin{cases} 
-        < 0 & x_j\leq 0, |y_j| < \lambda \\
-        > 0  & x_j \geq 0, |y_j| < \lambda  \\
+        < 0 & x_j\leq 0, |y_j| < \mu \\
+        > 0  & x_j \geq 0, |y_j| < \mu  \\
      \end{cases}\\
-    &= 0 \text{ if } |y_j| \ge \lambda \text{ and } y_j = \text{sgn}(x_j) ( \lambda + |x_j|^{p-1})\\
+    &= 0 \text{ if } |y_j| \ge \mu \text{ and } y_j = \text{sgn}(x_j) ( \mu + |x_j|^{p-1})\\
 \end{align*}
 
+In our case the proxy for $\mu$ is the multilication of the step size $\eta$ and the regularization weight $\lambda$, i.e $\mu = \lambda \eta$
 
+\begin{equation}
+    \label{eq: psmd}
+    x_{t + 1} = \text{sgn}(\nabla w(x_t) - \eta \nabla f(x_t)) \max(0, |\nabla w(x_t) - \eta \nabla f(x_t)| - \lambda \eta)^{\frac{1}{p-1}}
+\end{equation}
+
+where $\nabla w(x) = |x|^{p-1} \text{sgn}(x)$
