@@ -1,3 +1,28 @@
 \section*{Theoretical Results}
 
-The function $\Phi(x) = \frac{1}{p} \| x \|_p^p$ is convex
+The function $\Phi(x) = \frac{1}{p} \| x \|_p^p$ is strongly convex with a parameter.
+
+The map used in the problem takes the gradients to a different space namely the dual space of the system. 
+The question is, what exactly is the norm that is being used on both of the sides.
+
+The update equation is based on the fenchel conjugate of the function and is as follows
+\begin{equation}
+    \nabla w^*(y) = \text{argmax}_{x \in X} \langle x, y \rangle - w(x)
+\end{equation}
+Using this we get 
+\begin{gather*}
+    \nabla w^*(y) = \text{argmax}_{x \in X} \langle x, y \rangle - \frac{1}{p} \| x \|_p^p 
+    \\
+    y = \nabla_x \frac{\sum |x^*_j|^p}{p} \\
+    \\
+    y_j = |x^*_j|^{p-1} \text{sgn}(x_j) \\
+    \\
+    x_j^* = |y_j|^{1/(p-1)} \text{sgn}(y_j)
+\end{gather*}
+
+Therefore the update step is 
+
+\begin{equation}
+\label{eq:mirror_descent}
+    x_{t+1} =  | \nabla w(x_t) - \eta \nabla f(x_t) |^{\frac{1}{p-1}} \text{sgn}(\nabla w(x_t) - \eta \nabla f(x_t))
+\end{equation}
