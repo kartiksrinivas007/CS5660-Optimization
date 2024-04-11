@@ -1,5 +1,4 @@
 import argparse
-import sys
 
 def argument_parser():
     parser = argparse.ArgumentParser(description='Run the algorithms')
