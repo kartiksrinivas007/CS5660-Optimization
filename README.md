@@ -4,3 +4,6 @@
 
 
 Note : The regularizer for the one-norm should be cross validated so that we get the best performance possible, it is possible that we are underfitting because of the value of the regularizer.
+
+- bias has been kept in the linear layer
+- custom weight initialization is still being used for the linear layer
