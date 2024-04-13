@@ -10,3 +10,4 @@ data/
 *.pyc
 *.png
 result.txt
+*.gzip
