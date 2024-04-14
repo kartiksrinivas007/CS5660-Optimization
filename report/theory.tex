@@ -65,3 +65,22 @@ In our case the proxy for $\mu$ is the multilication of the step size $\eta$ and
 \end{equation}
 
 where $\nabla w(x) = |x|^{p-1} \text{sgn}(x)$
+
+\subsection*{Accelerated Proximal Mirror Descent}
+
+We can accelerate the Proximal Mirror Descent Algorithm using the Nesterov Trick. Here the weight update equation is
+\begin{equation}
+w_{t+1} = w_t + \gamma_t \Delta w_{t-1} -\eta_t \nabla \mathcal{L}(w_t+\gamma_t\Delta w_{t-1})
+\end{equation}
+Here, $\Delta w_{t-1} = w_t-w_{t-1}$ and $\gamma_t$ is the momentum parameter. In Dual space this equation is 
+\begin{equation}
+\nabla \psi(w_{t+1}) = \nabla \psi(w_t) + \gamma_t\Delta z_{t-1} - \eta_t \nabla\mathcal{L}(w_t+\gamma_t \Delta w_{t-1})
+\end{equation} 
+Here, $\Delta z_{t-1} = \nabla \psi(w_t)-\nabla \psi(w_{t-1})$ and $\nabla \psi(w_t)$ are the dual variables.
+
+Using previous equations for proximal mirror descent, we can find the new update equation as 
+\begin{align*}
+y_t &= \nabla w(x_t) + \gamma (\nabla w(x_t)-\nabla w(x_{t-1})) - \eta \nabla f(x_t+\gamma (x_t-x_{t-1}))\\
+x_{t+1} &= \text{sgn}(y_t) \max(0, |y_t| - \lambda \eta)^{\frac{1}{p-1}}
+\end{align*}
+where $\nabla w(x) = |x|^{p-1} \text{sgn}(x)$
