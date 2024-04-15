@@ -31,7 +31,9 @@ def main(args=None):
         num_classes = 2
     else:
         assert False, "Unknown model"
-    
+
+    train_loader, test_loader, val_loader = data.return_loader(args)
+
     if args.algorithm == "sgd":
         optimizer = optim.SGD(model.parameters(), lr=args.lr)
     elif args.algorithm == "smd":
@@ -39,12 +41,12 @@ def main(args=None):
     elif args.algorithm == "prox_smd":
         optimizer = prox_smd.PROXSMD(model.parameters(), lr=args.lr, q=args.q_norm, reg=args.reg)
     elif args.algorithm == "accelerated_prox_smd":
-        optimizer = accelerated_prox_smd.ACCELERATEDPROXSMD(model.parameters(), lr=args.lr, q=args.q_norm, reg=args.reg)
+        num_calls = args.num_epochs * len(train_loader)
+        optimizer = accelerated_prox_smd.ACCELERATEDPROXSMD(model.parameters(), lr=args.lr, q=args.q_norm, reg=args.reg, momentum=args.momentum, num_calls=num_calls)
     else:
         assert False, "Unknown algorithm"
         
     model = model.to(device)
-    train_loader, test_loader, val_loader = data.return_loader(args)
     # model.apply(custom_weight_init)
 
     # print(model.state_dict())

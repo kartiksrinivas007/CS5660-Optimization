@@ -83,4 +83,27 @@ Using previous equations for proximal mirror descent, we can find the new update
 y_t &= \nabla w(x_t) + \gamma (\nabla w(x_t)-\nabla w(x_{t-1})) - \eta \nabla f(x_t+\gamma (x_t-x_{t-1}))\\
 x_{t+1} &= \text{sgn}(y_t) \max(0, |y_t| - \lambda \eta)^{\frac{1}{p-1}}
 \end{align*}
-where $\nabla w(x) = |x|^{p-1} \text{sgn}(x)$
+where $\nabla w(x) = |x|^{p-1} \text{sgn}(x)$.
+
+We observed that pytorch \href{https://pytorch.org/docs/stable/generated/torch.optim.SGD.html}{implementation} approximates the Nesterov momentum equations as 
+\begin{align*}
+v_{t+1} &= \gamma v_t + \nabla f(x_t)\\
+x_{t+1} &= x_t - \eta v_{t+1}
+\end{align*}
+
+However, we used the original Nesterov equations given as
+\begin{align*}
+v_{t+1} &= \gamma v_t - \eta \nabla f(x_t+\gamma v_t)\\
+x_{t+1} &= x_t + v_{t+1}
+\end{align*}
+
+In dual space, these equations become
+\begin{align*}
+z_{t+1} &= \gamma z_t - \eta \nabla f(x_t+\gamma (x_t-x_{t-1}))\\
+y_{t+!} &= y_t + z_{t+1}\\
+x_{t+1} &= \text{sgn}(y_{t+1}) \max(0, |y_{t+1}| - \lambda \eta)^{\frac{1}{p-1}}
+\end{align*}
+
+Since we want to compute the gradient at $x_t+\gamma (x_t-x_{t-1})$, we update the weights to $x_t+\gamma (x_t-x_{t-1})$ in practice and only use the actual update at the last update step. 
+
+At the first update, we ensure initialisation is such that the first step is same as Proximal Mirror Descent update step (momentum is 0).
