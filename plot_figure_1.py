@@ -40,7 +40,7 @@ if __name__ == "__main__":
     smd14 = manager.list()
     sgd = manager.list()
 
-    p1 = Process(target=gradient, args=(sgd,d1,))
+    p1 = Process(target=gradient, args=(sgd, d1,))
     p2 = Process(target=mirror_descent, args=(1.1, smd1, d2,))
     p3 = Process(target=mirror_descent, args=(3, smd3, d3,))
     p4 = Process(target=mirror_descent, args=(8, smd8, d4,))
