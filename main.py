@@ -18,10 +18,7 @@ def main(args=None):
     if args is None:
         args = argument_parser()
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    args.device = device
-    num_classes = 0
-    print(f"Using {device}")
+    print(f"Using {args.device}")
 
     if args.model == "resnet18":
         model = tv.models.resnet18(num_classes=10)
@@ -49,7 +46,7 @@ def main(args=None):
     else:
         assert False, "Unknown algorithm"
         
-    model = model.to(device)
+    model = model.to(args.device)
     # model.apply(custom_weight_init)
 
     # print(model.state_dict())
