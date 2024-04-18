@@ -59,10 +59,3 @@ def return_loader(args):
         return magic04d_trainloader, magic04d_testloader, magic04d_valoader
 
     assert False, f"{args.dset} is not a valid dataset"
-
-
-def test():
-    train, test = return_loader({"dset": "cifar10"})
-    plt.imshow(train.dataset[0][0].permute(1, 2, 0))
-    plt.show()
-    pass

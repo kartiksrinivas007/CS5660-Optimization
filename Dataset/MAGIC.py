@@ -121,7 +121,3 @@ def split_data(X, y, args):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=args.test, random_state=42)
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=args.val, random_state=42)
     return X_train, X_test, X_val, y_train, y_test, y_val
-
-if __name__ == "__main__":
-    test_magic04s()
-    pass

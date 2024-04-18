@@ -44,8 +44,8 @@ def train(model, train_loader, val_loader, test_loader, optim, args, metrics):
         val_hist.append(val_loss)
         train_hist.append(train_loss)
         test_hist.append(test_loss)
-        print(f"Epoch {epoch}: Validation Loss = {val_loss}")
         print(f"Epoch {epoch}: Training Loss = {train_loss}")
+        print(f"Epoch {epoch}: Validation Loss = {val_loss}")
         print(f"Epoch {epoch}: Test Loss = {test_loss}")
 
         for i, metric in enumerate(metrics):
@@ -72,7 +72,7 @@ def compute_metric(model, loader, args, metric):
     model.eval()
     total_acc = 0
     with torch.no_grad():
-        for index, batch in tqdm(enumerate(loader)):
+        for index, batch in enumerate(loader):
             x,y = batch
             x = x.to(args.device)
             y = y.to(args.device)
