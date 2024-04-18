@@ -19,8 +19,13 @@ def train(model, train_loader, val_loader, optim, args):
             y = y.to(args.device)
             output = model(x)
             loss = nn.CrossEntropyLoss()(output, y)
-            for param in model.parameters():
-                loss += args.reg * torch.norm(param, p=1)
+
+            # If we are using prox_smd or accelerated_prox_smd, we handle regularizer differently
+            # Thus we compute the gradient of the original loss function and not the
+            # gradient of the loss + regularizer
+            if args.algorithm not in ["prox_smd", "accelerated_prox_smd"]:
+                for param in model.parameters():
+                    loss += args.reg * torch.norm(param, p=1)
             
             loss.backward()
             optim.step()

@@ -14,6 +14,7 @@ def gradient(accs, device):
         args.num_epochs = num_epochs
         args.batch_size = batch_size
         args.device = "cuda:"+str(device)
+        args.reg = 0
         model, test_loader = main(args)
         accs.append(test(model, test_loader, args))
     print(f"SGD: {accs}")
@@ -26,6 +27,7 @@ def mirror_descent(q, accs, device):
         args.batch_size = batch_size
         args.num_epochs = num_epochs
         args.device = "cuda:" + str(device)
+        args.reg = 0
         model, test_loader = main(args)
         accs.append(test(model, test_loader, args))
     print(f"SMD q={q}: {accs}")
