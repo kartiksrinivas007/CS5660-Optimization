@@ -64,24 +64,33 @@ def magic04s():
         X.to_parquet('./Dataset/MAGIC04s_source.gzip')
         y.to_parquet('./Dataset/MAGIC04s_target.gzip')
         
-        
         return prepare_data(X, y)
 
 def magic04d():
-    p = 0.5 # features take values -1 or 1 with probability 0.5
-    X, y = magic_dataset()
+    X = None
+    y = None
+    X, y = load_cached_into('./Dataset/MAGIC04s_source.gzip', './Dataset/MAGIC04s_target.gzip', X, y)
+    # breakpoint()
+    if X is not None and y is not None:
+        print("Loading MAGIC04s from cache...")
+        return prepare_data(X, y)
+    else:
+        p = 0.5  # 5% of the features are non-zero
+        print("Getting MAGIC...")
+        X, y = magic_dataset()
+        print("Building MAGIC04s...")
+        # Adding 1000 sparse random features to X
+        num_samples = X.shape[0]
+        dense_features = 2 * bernoulli.rvs(p, size=[num_samples, 1000]) - 1
+        df = pd.DataFrame(dense_features, columns=[f'random_{i}' for i in range(1000)])
 
-    # Adding 1000 dense random features to X
-    num_samples = X.shape[0]
-    dense_features = 2*bernoulli.rvs(p, size=[num_samples, 1000])-1
-    df = pd.DataFrame(dense_features, columns=[f'random_{i}' for i in range(1000)])
+        X = pd.concat([X, df], axis=1)
+        y = (y == 'h').astype(int)
 
-    X = pd.concat([X, df], axis=1)
-    # y contians 'g' and 'h' for 0 and 1 respectively, need to convert to 0 and 1
-    y = (y == 'h').astype(int)
-    X_numpy = X.to_numpy()
-    
-    return (X_numpy), y
+        X.to_parquet('./Dataset/MAGIC04s_source.gzip')
+        y.to_parquet('./Dataset/MAGIC04s_target.gzip')
+
+        return prepare_data(X, y)
 
 
 def test_magic04s():

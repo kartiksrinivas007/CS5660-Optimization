@@ -1,3 +1,5 @@
+import numpy as np
+
 from Algorithms import smd, prox_smd, accelerated_prox_smd
 from Dataset import data
 import torchvision as tv
@@ -9,6 +11,7 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 from init import custom_weight_init
 import torch.nn as nn
+import time
 
 def main(args=None):
     args_copy = args # this is not a copy, you should deep copy it if you want a copy, I think changing args_copy will change args as well
@@ -50,16 +53,25 @@ def main(args=None):
     # model.apply(custom_weight_init)
 
     # print(model.state_dict())
-
+    start_time = time.time()
     model, train_hist, val_hist = train(model, train_loader, val_loader, optimizer, args)
+    end_time = time.time()
+
     print(test(model, test_loader, args, num_classes))
     if args_copy is None:
         fig, ax = plt.subplots(2, 1)
-        ax[0].plot(val_hist, label="Validation per batch", color="red")
-        ax[1].plot(train_hist, label="Training per sample")
+        ax[0].plot(val_hist, label="Validation objective vs epoch", color="red")
+        ax[1].plot(train_hist, label="Training objective vs epoch")
         fig.legend()
         fig.savefig(f"plot_{args.lr}_{args.algorithm}_{args.dataset}.png")
-        fig.show()
+        # fig.show()
+
+        fig, ax = plt.subplots(2, 1)
+        ax[0].plot(np.linspace(0, end_time-start_time, len(val_hist)), val_hist, label="Validation objective vs time", color="red")
+        ax[1].plot(np.linspace(0, end_time-start_time, len(val_hist)), train_hist, label="Training objective vs time")
+        fig.legend()
+        fig.savefig(f"plot_{args.lr}_{args.algorithm}_{args.dataset}_vs_time.png")
+        print(f"Time taken: {end_time-start_time}")
     return model, test_loader
 
 if __name__ == "__main__":
