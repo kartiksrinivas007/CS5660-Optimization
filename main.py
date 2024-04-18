@@ -5,11 +5,11 @@ from Dataset import data
 import torchvision as tv
 from utils.train import train
 from utils.parser import argument_parser
-from utils.test import test
 import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
 from init import custom_weight_init
+from torchmetrics import Accuracy
 import torch.nn as nn
 import time
 
@@ -47,29 +47,32 @@ def main(args=None):
         assert False, "Unknown algorithm"
         
     model = model.to(args.device)
+    metrics = [Accuracy(task="multiclass", num_classes=num_classes).to(device=args.device)]
     # model.apply(custom_weight_init)
 
     # print(model.state_dict())
     start_time = time.time()
-    model, train_hist, val_hist = train(model, train_loader, val_loader, optimizer, args)
+    train_hist, val_hist, test_hist, computed_metrics = train(model, train_loader, val_loader, test_loader, optimizer, args, metrics)
     end_time = time.time()
 
-    print(test(model, test_loader, args, num_classes))
     if args_copy is None:
-        fig, ax = plt.subplots(2, 1)
-        ax[0].plot(val_hist, label="Validation objective vs epoch", color="red")
-        ax[1].plot(train_hist, label="Training objective vs epoch")
+        fig, ax = plt.subplots(3, 1)
+        ax[0].plot(train_hist, label="Training loss vs epoch", color="red")
+        ax[1].plot(val_hist, label="Validation loss vs epoch", color="blue")
+        ax[2].plot(test_hist, label="Test loss vs epoch", color="green")
         fig.legend()
-        fig.savefig(f"plot_{args.lr}_{args.algorithm}_{args.dataset}.png")
+        fig.savefig(f"Plots/plot_{args.lr}_{args.algorithm}_{args.dataset}_loss_vs_epoch.png")
         # fig.show()
 
-        fig, ax = plt.subplots(2, 1)
-        ax[0].plot(np.linspace(0, end_time-start_time, len(val_hist)), val_hist, label="Validation objective vs time", color="red")
-        ax[1].plot(np.linspace(0, end_time-start_time, len(val_hist)), train_hist, label="Training objective vs time")
+        fig, ax = plt.subplots(3, 1)
+        ax[0].plot(np.linspace(0, end_time-start_time, len(computed_metrics[0][0])), computed_metrics[0][0], label="Training Accuracy vs time", color="red")
+        ax[1].plot(np.linspace(0, end_time-start_time, len(computed_metrics[0][1])), computed_metrics[0][1], label="Validation Accuracy vs time", color="blue")
+        ax[2].plot(np.linspace(0, end_time-start_time, len(computed_metrics[0][2])), computed_metrics[0][2], label="Test Accuracy vs time", color="green")
         fig.legend()
-        fig.savefig(f"plot_{args.lr}_{args.algorithm}_{args.dataset}_vs_time.png")
+        fig.savefig(f"Plots/plot_{args.lr}_{args.algorithm}_{args.dataset}_accuracy_vs_time.png")
         print(f"Time taken: {end_time-start_time}")
-    return model, test_loader
+        print(f"Final test accuracy: {computed_metrics[0][2][-1]}")
+    return computed_metrics[0][2][-1]
 
 if __name__ == "__main__":
     main() # passing no arguments here for some reason

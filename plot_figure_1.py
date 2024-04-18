@@ -1,5 +1,4 @@
 from main import main
-from utils.test import test
 from utils.parser import argument_parser
 from multiprocessing import Process, Manager
 import matplotlib.pyplot as plt
@@ -15,8 +14,7 @@ def gradient(accs, device):
         args.batch_size = batch_size
         args.device = "cuda:"+str(device)
         args.reg = 0
-        model, test_loader = main(args)
-        accs.append(test(model, test_loader, args))
+        accs.append(main(args))
     print(f"SGD: {accs}")
 
 def mirror_descent(q, accs, device):
@@ -28,8 +26,7 @@ def mirror_descent(q, accs, device):
         args.num_epochs = num_epochs
         args.device = "cuda:" + str(device)
         args.reg = 0
-        model, test_loader = main(args)
-        accs.append(test(model, test_loader, args))
+        accs.append(main(args))
     print(f"SMD q={q}: {accs}")
 
 if __name__ == "__main__":
