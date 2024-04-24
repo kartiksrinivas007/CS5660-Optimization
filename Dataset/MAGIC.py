@@ -35,6 +35,9 @@ def magic_dataset():
         # data (as pandas dataframes)
         X = magic_gamma_telescope.data.features
         y = magic_gamma_telescope.data.targets
+        
+        
+        # should we maybe normalize the magic dataset ? 
         X.to_parquet('./Dataset/MAGIC_source.gzip')
         y.to_parquet('./Dataset/MAGIC_target.gzip')
         return X, y
@@ -69,16 +72,16 @@ def magic04s():
 def magic04d():
     X = None
     y = None
-    X, y = load_cached_into('./Dataset/MAGIC04s_source.gzip', './Dataset/MAGIC04s_target.gzip', X, y)
+    X, y = load_cached_into('./Dataset/MAGIC04d_source.gzip', './Dataset/MAGIC04d_target.gzip', X, y)
     # breakpoint()
     if X is not None and y is not None:
-        print("Loading MAGIC04s from cache...")
+        print("Loading MAGIC04d from cache...")
         return prepare_data(X, y)
     else:
         p = 0.5  # 5% of the features are non-zero
         print("Getting MAGIC...")
         X, y = magic_dataset()
-        print("Building MAGIC04s...")
+        print("Building MAGIC04d...")
         # Adding 1000 sparse random features to X
         num_samples = X.shape[0]
         dense_features = 2 * bernoulli.rvs(p, size=[num_samples, 1000]) - 1
@@ -87,8 +90,8 @@ def magic04d():
         X = pd.concat([X, df], axis=1)
         y = (y == 'h').astype(int)
 
-        X.to_parquet('./Dataset/MAGIC04s_source.gzip')
-        y.to_parquet('./Dataset/MAGIC04s_target.gzip')
+        X.to_parquet('./Dataset/MAGIC04d_source.gzip')
+        y.to_parquet('./Dataset/MAGIC04d_target.gzip')
 
         return prepare_data(X, y)
 

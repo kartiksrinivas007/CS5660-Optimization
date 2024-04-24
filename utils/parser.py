@@ -11,8 +11,8 @@ def argument_parser():
     parser.add_argument('--device', type=str, default="cuda", help='The device to run on')
     parser.add_argument('--q_norm', type=float, default=2, help='The q norm')
     parser.add_argument('--reg', type=float, default=0.001, help='The regularization parameter for the one-norm')
-    parser.add_argument('--test', type=float, default=0.2, help='Test size split')
-    parser.add_argument('--val', type=float, default=0.2, help='Validation size split')
+    parser.add_argument('--test', type=float, default=0.1, help='Test size split')
+    parser.add_argument('--val', type=float, default=0.1, help='Validation size split')
     parser.add_argument('--momentum', type=float, default=0.9, help='The momentum for the optimizer')
     args = parser.parse_args()
     return args

@@ -7,11 +7,13 @@ matplotlib.use('Agg')
 
 def train(model, train_loader, val_loader, test_loader, optim, args, metrics):
     model.train()
-    # train_time_hist = []
+    train_time_hist = []
     train_hist = []
     val_hist = []
     test_hist = []
     computed_metrics = [[[], [], []] for _ in range(len(metrics))]
+    # loss_reg_loss_ratio_hist = []
+    # loss_ratio_hist = []
     for epoch in range(args.num_epochs):
         train_loss_step = 0
         for index, batch in tqdm(enumerate(train_loader)):
@@ -25,33 +27,58 @@ def train(model, train_loader, val_loader, test_loader, optim, args, metrics):
             # If we are using prox_smd or accelerated_prox_smd, we handle regularizer differently
             # Thus we compute the gradient of the original loss function and not the
             # gradient of the loss + regularizer
+            reg_loss = torch.tensor(0.0).to(args.device)
             if args.algorithm not in ["prox_smd", "accelerated_prox_smd"] and args.reg > 0:
                 for param in model.parameters():
-                    loss += args.reg * torch.norm(param, p=1)
+                    reg_loss += args.reg * torch.norm(param, p=1)
+            else:
+                reg_loss = torch.tensor(0.0, requires_grad=False).to(args.device)
+                for param in model.parameters():
+                    reg_loss += args.reg * torch.norm(param, p=1)
             
+
+            loss = loss + reg_loss
+            if (index == 0):
+                print("The ratio of reg_loss to loss is: ", reg_loss.item()/loss.item())
+    
             loss.backward()
             optim.step()
             train_loss_step += loss.item()
-            # train_time_hist.append(train_loss_step/x.shape[0]) # train_loss per SAMPLE
+            train_time_hist.append(train_loss_step/x.shape[0]) # train_loss per SAMPLE
+            # loss_reg_loss_ratio_hist.append(loss.item()/reg_loss.item())
         
-        # dump a training plot
-        # plt.plot(train_time_hist)
-        # plt.savefig(f"Plots/training_plot_{epoch}.png")
-        # plt.close()
+        #dump a training plot
+        # fig, ax = plt.subplots(2, 1)
+        # ax[1].plot(loss_reg_loss_ratio_hist)
+        # ax[0].plot(train_time_hist)
+        # fig.savefig(f"Plots/training_plot_{epoch}.png")
+        # fig.close()
         val_loss = calc_loss(model, val_loader, args)
         train_loss = calc_loss(model, train_loader, args)
         test_loss = calc_loss(model, test_loader, args)
+        # avg_loss_ratio = sum(loss_reg_loss_ratio_hist)/len(loss_reg_loss_ratio_hist)
         val_hist.append(val_loss)
         train_hist.append(train_loss)
         test_hist.append(test_loss)
+        # loss_ratio_hist.append(avg_loss_ratio)
         print(f"Epoch {epoch}: Training Loss = {train_loss}")
         print(f"Epoch {epoch}: Validation Loss = {val_loss}")
         print(f"Epoch {epoch}: Test Loss = {test_loss}")
+        # print(f"Epoch {epoch}: Average Loss/Reg Loss Ratio = {avg_loss_ratio}")
 
         for i, metric in enumerate(metrics):
             computed_metrics[i][0].append(compute_metric(model, train_loader, args, metric))
             computed_metrics[i][1].append(compute_metric(model, val_loader, args, metric))
             computed_metrics[i][2].append(compute_metric(model, test_loader, args, metric))
+            fig, ax = plt.subplots(3, 1)
+            ax[0].plot(computed_metrics[i][0], label="Training metric vs epoch", color="red")
+            ax[1].plot(computed_metrics[i][1], label="Validation metric vs epoch", color="blue")
+            ax[2].plot(computed_metrics[i][2], label="Test metric vs epoch", color="green")
+            # ax[3].plot(loss_ratio_hist, label="Average Loss/Reg Loss Ratio vs epoch", color="purple")
+            fig.legend()
+            fig.savefig(f"Plots/Metrics/metric_plot_{i}_{epoch}.png")
+            plt.close(fig)
+            
 
     return train_hist, val_hist, test_hist, computed_metrics
 

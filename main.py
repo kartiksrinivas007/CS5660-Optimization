@@ -1,6 +1,6 @@
 import numpy as np
 
-from Algorithms import smd, prox_smd, accelerated_prox_smd
+from Algorithms import smd, prox_smd, accelerated_prox_smd, subgd
 from Dataset import data
 import torchvision as tv
 from utils.train import train
@@ -36,6 +36,8 @@ def main(args=None):
 
     if args.algorithm == "sgd":
         optimizer = optim.SGD(model.parameters(), lr=args.lr)
+    elif args.algorithm == "subgd":
+        optimizer = subgd.SUBGD(model.parameters(), lr=args.lr)
     elif args.algorithm == "smd":
         optimizer = smd.SMD(model.parameters(), lr=args.lr, q=args.q_norm)
     elif args.algorithm == "prox_smd":
@@ -72,7 +74,7 @@ def main(args=None):
         fig.savefig(f"Plots/plot_{args.lr}_{args.algorithm}_{args.dataset}_accuracy_vs_time.png")
         print(f"Time taken: {end_time-start_time}")
         print(f"Final test accuracy: {computed_metrics[0][2][-1]}")
-    return computed_metrics[0][2][-1]
+    return computed_metrics
 
 if __name__ == "__main__":
     main() # passing no arguments here for some reason
