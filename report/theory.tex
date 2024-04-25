@@ -1,5 +1,15 @@
 \section*{Theoretical Results}
 
+\subsection*{Strong convexity of $\frac{1}{p} \| x \|_p^p$}
+\begin{align*}
+\Phi(x) &= \frac{1}{p} \| x \|_p^p \\
+\nabla_i \Phi(x) &= \nabla_i \frac{\sum |x_j|^p}{p} \\
+&= |x_i|^{p-1} \text{sgn}(x_i) \\
+\nabla_{ij} \Phi(x) &= \begin{cases}(p-1)|x_i|^{p-2}\ \text{if i=j}\\ 0\ \text{o/w}\end{cases}
+\end{align*}
+
+So the Hessian is positive semi-definite. If $x_i \ne 0\ \forall i$, then none of the eigen-values of the Hessian are 0. So $\Phi(x)$ is strongly convex if $x_i \ne 0\ \forall i$.
+
 \subsection*{Mirror Descent}
 The function $\Phi(x) = \frac{1}{p} \| x \|_p^p$ is strongly convex with a parameter.
 
