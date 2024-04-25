@@ -3,6 +3,7 @@ from tqdm import tqdm
 import torch 
 import matplotlib.pyplot as plt
 import matplotlib
+import time
 matplotlib.use('Agg')
 
 def train(model, train_loader, val_loader, test_loader, optim, args, metrics):
@@ -11,8 +12,33 @@ def train(model, train_loader, val_loader, test_loader, optim, args, metrics):
     train_hist = []
     val_hist = []
     test_hist = []
+    start_time = time.time()
     computed_metrics = [[[], [], []] for _ in range(len(metrics))]
     train_loss_prev = 1e8
+    val_loss = calc_loss(model, val_loader, args)
+    train_loss = calc_loss(model, train_loader, args)
+    test_loss = calc_loss(model, test_loader, args)
+    epoch = -1
+    for i, metric in enumerate(metrics):
+        computed_metrics[i][0].append(compute_metric(model, train_loader, args, metric))
+        computed_metrics[i][1].append(compute_metric(model, val_loader, args, metric))
+        computed_metrics[i][2].append(compute_metric(model, test_loader, args, metric))
+        
+        if (args.wandb):
+            import wandb
+            wandb.log(
+                {
+                    
+                    f"Training {metric.__class__.__name__}": computed_metrics[i][0][-1],
+                    f"Validation {metric.__class__.__name__}": computed_metrics[i][1][-1],
+                    f"Test {metric.__class__.__name__}": computed_metrics[i][2][-1],
+                    f"Training loss": train_loss,
+                    f"Validation loss": val_loss,
+                    f"Test loss": test_loss,
+                    f"epoch": epoch,
+                    f"CPU_Time": start_time-start_time
+                }
+            )
     # loss_reg_loss_ratio_hist = []
     # loss_ratio_hist = []
     for epoch in range(args.num_epochs):
@@ -52,12 +78,7 @@ def train(model, train_loader, val_loader, test_loader, optim, args, metrics):
             train_time_hist.append(train_loss_step/x.shape[0]) # train_loss per SAMPLE
             # loss_reg_loss_ratio_hist.append(loss.item()/reg_loss.item())
         
-        #dump a training plot
-        # fig, ax = plt.subplots(2, 1)
-        # ax[1].plot(loss_reg_loss_ratio_hist)
-        # ax[0].plot(train_time_hist)
-        # fig.savefig(f"Plots/training_plot_{epoch}.png")
-        # fig.close()
+
         val_loss = calc_loss(model, val_loader, args)
         train_loss = calc_loss(model, train_loader, args)
         test_loss = calc_loss(model, test_loader, args)
@@ -87,7 +108,8 @@ def train(model, train_loader, val_loader, test_loader, optim, args, metrics):
                         f"Training loss": train_loss,
                         f"Validation loss": val_loss,
                         f"Test loss": test_loss,
-                        f"epoch": epoch
+                        f"epoch": epoch,
+                        f"CPU_Time": time.time()-start_time
                         
                     }
                 )

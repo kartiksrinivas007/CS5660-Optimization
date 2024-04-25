@@ -6,11 +6,11 @@ import os
 
 if __name__ == "__main__":
     # make a set of values that you want to run the subgd algorithm for 
-    dataset = ["magic04s"]
+    dataset = ["magic04d"]
     model = ["linear"]
     batch_size = [32]
     num_epochs = [20]
-    lr = [1e-4, 1.5e-5 , 1e-5, 1e-6, 1.5e-6, 1.5e-7, 1e-7]
+    lr = [1.5e-5 , 1e-5]
     device = ["cuda"]
     reg = [1e-3]
     test = [0.2]
