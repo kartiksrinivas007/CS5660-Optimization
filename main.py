@@ -13,11 +13,44 @@ from torchmetrics import Accuracy
 import torch.nn as nn
 import time
 
+
+
 def main(args=None):
+    
     args_copy = args # this is not a copy, you should deep copy it if you want a copy, I think changing args_copy will change args as well
     if args is None:
         args = argument_parser()
 
+    
+    if (args.wandb):
+        import wandb
+        wandb.init(
+            project="CS5660-Optimization",
+            
+            config  = {
+                "learning_rate": args.lr,
+                "algorithm": args.algorithm,
+                "dataset": args.dataset,
+                "model": args.model,
+                "device": args.device,
+                "num_epochs": args.num_epochs,
+                "batch_size": args.batch_size,
+                "momentum": args.momentum,
+                "q_norm": args.q_norm,
+                "reg": args.reg,
+                "seed": args.seed
+            }
+            
+            
+        )
+    
+    np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+    torch.cuda.manual_seed(args.seed)
+    torch.cuda.manual_seed_all(args.seed)
+    # torch.backends.cudnn.deterministic = True
+    # torch.backends.cudnn.benchmark = False
+    
     print(f"Using {args.device}")
 
     if args.model == "resnet18":
@@ -57,24 +90,38 @@ def main(args=None):
     train_hist, val_hist, test_hist, computed_metrics = train(model, train_loader, val_loader, test_loader, optimizer, args, metrics)
     end_time = time.time()
 
-    if args_copy is None:
-        fig, ax = plt.subplots(3, 1)
-        ax[0].plot(train_hist, label="Training loss vs epoch", color="red")
-        ax[1].plot(val_hist, label="Validation loss vs epoch", color="blue")
-        ax[2].plot(test_hist, label="Test loss vs epoch", color="green")
-        fig.legend()
-        fig.savefig(f"Plots/plot_{args.lr}_{args.algorithm}_{args.dataset}_loss_vs_epoch.png")
-        # fig.show()
+    # if args_copy is None:
+    #     fig, ax = plt.subplots(3, 1)
+    #     ax[0].plot(train_hist, label="Training loss vs epoch", color="red")
+    #     ax[1].plot(val_hist, label="Validation loss vs epoch", color="blue")
+    #     ax[2].plot(test_hist, label="Test loss vs epoch", color="green")
+    #     fig.legend()
+    #     fig.savefig(f"Plots/plot_{args.lr}_{args.algorithm}_{args.dataset}_loss_vs_epoch.png")
+    #     # fig.show()
 
-        fig, ax = plt.subplots(3, 1)
-        ax[0].plot(np.linspace(0, end_time-start_time, len(computed_metrics[0][0])), computed_metrics[0][0], label="Training Accuracy vs time", color="red")
-        ax[1].plot(np.linspace(0, end_time-start_time, len(computed_metrics[0][1])), computed_metrics[0][1], label="Validation Accuracy vs time", color="blue")
-        ax[2].plot(np.linspace(0, end_time-start_time, len(computed_metrics[0][2])), computed_metrics[0][2], label="Test Accuracy vs time", color="green")
-        fig.legend()
-        fig.savefig(f"Plots/plot_{args.lr}_{args.algorithm}_{args.dataset}_accuracy_vs_time.png")
-        print(f"Time taken: {end_time-start_time}")
-        print(f"Final test accuracy: {computed_metrics[0][2][-1]}")
-    return computed_metrics
+    #     fig, ax = plt.subplots(3, 1)
+    #     ax[0].plot(np.linspace(0, end_time-start_time, len(computed_metrics[0][0])), computed_metrics[0][0], label="Training Accuracy vs time", color="red")
+    #     ax[1].plot(np.linspace(0, end_time-start_time, len(computed_metrics[0][1])), computed_metrics[0][1], label="Validation Accuracy vs time", color="blue")
+    #     ax[2].plot(np.linspace(0, end_time-start_time, len(computed_metrics[0][2])), computed_metrics[0][2], label="Test Accuracy vs time", color="green")
+    #     fig.legend()
+    #     fig.savefig(f"Plots/plot_{args.lr}_{args.algorithm}_{args.dataset}_accuracy_vs_time.png")
+    #     print(f"Time taken: {end_time-start_time}")
+    #     print(f"Final test accuracy: {computed_metrics[0][2][-1]}")
+    
+    
+    if (args.wandb):
+        wandb.log(
+            {
+                "Time taken": end_time-start_time,
+                "Final test accuracy": computed_metrics[0][2][-1]
+            }
+        )
+        wandb.finish()
+        
+    
+    
+    return computed_metrics[0][2][-1]
+
 
 if __name__ == "__main__":
     main() # passing no arguments here for some reason
