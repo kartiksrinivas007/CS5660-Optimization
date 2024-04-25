@@ -11,3 +11,4 @@ data/
 *.png
 result.txt
 *.gzip
+wandb/
