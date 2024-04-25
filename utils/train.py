@@ -77,52 +77,91 @@ def train(model, train_loader, val_loader, test_loader, optim, args, metrics):
             train_loss_step += loss.item()
             train_time_hist.append(train_loss_step/x.shape[0]) # train_loss per SAMPLE
             # loss_reg_loss_ratio_hist.append(loss.item()/reg_loss.item())
+            
+            if (index %100 == 0):
+                        
+                val_loss = calc_loss(model, val_loader, args)
+                train_loss = calc_loss(model, train_loader, args)
+                test_loss = calc_loss(model, test_loader, args)
+                # avg_loss_ratio = sum(loss_reg_loss_ratio_hist)/len(loss_reg_loss_ratio_hist)
+                val_hist.append(val_loss)
+                train_hist.append(train_loss)
+                test_hist.append(test_loss)
+                # loss_ratio_hist.append(avg_loss_ratio)
+                print(f"Epoch {epoch}: Training Loss = {train_loss}")
+                print(f"Epoch {epoch}: Validation Loss = {val_loss}")
+                print(f"Epoch {epoch}: Test Loss = {test_loss}")
+                # print(f"Epoch {epoch}: Average Loss/Reg Loss Ratio = {avg_loss_ratio}")
+
+                for i, metric in enumerate(metrics):
+                    computed_metrics[i][0].append(compute_metric(model, train_loader, args, metric))
+                    computed_metrics[i][1].append(compute_metric(model, val_loader, args, metric))
+                    computed_metrics[i][2].append(compute_metric(model, test_loader, args, metric))
+                    
+                    if (args.wandb):
+                        import wandb
+                        wandb.log(
+                            {
+                                
+                                f"Training {metric.__class__.__name__}": computed_metrics[i][0][-1],
+                                f"Validation {metric.__class__.__name__}": computed_metrics[i][1][-1],
+                                f"Test {metric.__class__.__name__}": computed_metrics[i][2][-1],
+                                f"Training loss": train_loss,
+                                f"Validation loss": val_loss,
+                                f"Test loss": test_loss,
+                                f"epoch": epoch,
+                                f"CPU_Time": time.time()-start_time
+                                
+                            }
+                        )
+                
+                pass
         
 
-        val_loss = calc_loss(model, val_loader, args)
-        train_loss = calc_loss(model, train_loader, args)
-        test_loss = calc_loss(model, test_loader, args)
-        # avg_loss_ratio = sum(loss_reg_loss_ratio_hist)/len(loss_reg_loss_ratio_hist)
-        val_hist.append(val_loss)
-        train_hist.append(train_loss)
-        test_hist.append(test_loss)
-        # loss_ratio_hist.append(avg_loss_ratio)
-        print(f"Epoch {epoch}: Training Loss = {train_loss}")
-        print(f"Epoch {epoch}: Validation Loss = {val_loss}")
-        print(f"Epoch {epoch}: Test Loss = {test_loss}")
-        # print(f"Epoch {epoch}: Average Loss/Reg Loss Ratio = {avg_loss_ratio}")
+        # val_loss = calc_loss(model, val_loader, args)
+        # train_loss = calc_loss(model, train_loader, args)
+        # test_loss = calc_loss(model, test_loader, args)
+        # # avg_loss_ratio = sum(loss_reg_loss_ratio_hist)/len(loss_reg_loss_ratio_hist)
+        # val_hist.append(val_loss)
+        # train_hist.append(train_loss)
+        # test_hist.append(test_loss)
+        # # loss_ratio_hist.append(avg_loss_ratio)
+        # print(f"Epoch {epoch}: Training Loss = {train_loss}")
+        # print(f"Epoch {epoch}: Validation Loss = {val_loss}")
+        # print(f"Epoch {epoch}: Test Loss = {test_loss}")
+        # # print(f"Epoch {epoch}: Average Loss/Reg Loss Ratio = {avg_loss_ratio}")
 
-        for i, metric in enumerate(metrics):
-            computed_metrics[i][0].append(compute_metric(model, train_loader, args, metric))
-            computed_metrics[i][1].append(compute_metric(model, val_loader, args, metric))
-            computed_metrics[i][2].append(compute_metric(model, test_loader, args, metric))
+        # for i, metric in enumerate(metrics):
+        #     computed_metrics[i][0].append(compute_metric(model, train_loader, args, metric))
+        #     computed_metrics[i][1].append(compute_metric(model, val_loader, args, metric))
+        #     computed_metrics[i][2].append(compute_metric(model, test_loader, args, metric))
             
-            if (args.wandb):
-                import wandb
-                wandb.log(
-                    {
+        #     if (args.wandb):
+        #         import wandb
+        #         wandb.log(
+        #             {
                         
-                        f"Training {metric.__class__.__name__}": computed_metrics[i][0][-1],
-                        f"Validation {metric.__class__.__name__}": computed_metrics[i][1][-1],
-                        f"Test {metric.__class__.__name__}": computed_metrics[i][2][-1],
-                        f"Training loss": train_loss,
-                        f"Validation loss": val_loss,
-                        f"Test loss": test_loss,
-                        f"epoch": epoch,
-                        f"CPU_Time": time.time()-start_time
+        #                 f"Training {metric.__class__.__name__}": computed_metrics[i][0][-1],
+        #                 f"Validation {metric.__class__.__name__}": computed_metrics[i][1][-1],
+        #                 f"Test {metric.__class__.__name__}": computed_metrics[i][2][-1],
+        #                 f"Training loss": train_loss,
+        #                 f"Validation loss": val_loss,
+        #                 f"Test loss": test_loss,
+        #                 f"epoch": epoch,
+        #                 f"CPU_Time": time.time()-start_time
                         
-                    }
-                )
+        #             }
+        # #         )
             
-            fig, ax = plt.subplots(3, 1)
-            ax[0].plot(computed_metrics[i][0], label="Training metric vs epoch", color="red")
-            ax[1].plot(computed_metrics[i][1], label="Validation metric vs epoch", color="blue")
-            ax[2].plot(computed_metrics[i][2], label="Test metric vs epoch", color="green")
+        #     fig, ax = plt.subplots(3, 1)
+        #     ax[0].plot(computed_metrics[i][0], label="Training metric vs epoch", color="red")
+        #     ax[1].plot(computed_metrics[i][1], label="Validation metric vs epoch", color="blue")
+        #     ax[2].plot(computed_metrics[i][2], label="Test metric vs epoch", color="green")
             
-            # ax[3].plot(loss_ratio_hist, label="Average Loss/Reg Loss Ratio vs epoch", color="purple")
-            fig.legend()
-            fig.savefig(f"Plots/Metrics/metric_plot_{i}_{epoch}.png")
-            plt.close(fig)
+        #     # ax[3].plot(loss_ratio_hist, label="Average Loss/Reg Loss Ratio vs epoch", color="purple")
+        #     fig.legend()
+        #     fig.savefig(f"Plots/Metrics/metric_plot_{i}_{epoch}.png")
+        #     plt.close(fig)
             
 
     return train_hist, val_hist, test_hist, computed_metrics
