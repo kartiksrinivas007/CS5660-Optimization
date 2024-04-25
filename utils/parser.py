@@ -14,6 +14,8 @@ def argument_parser():
     parser.add_argument('--test', type=float, default=0.1, help='Test size split')
     parser.add_argument('--val', type=float, default=0.1, help='Validation size split')
     parser.add_argument('--momentum', type=float, default=0.9, help='The momentum for the optimizer')
+    parser.add_argument('--seed', type=int, default=0, help='The seed for the random number generator')
+    parser.add_argument('--wandb', action='store_true', help='Whether to use wandb')
     args = parser.parse_args()
     return args
 

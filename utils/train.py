@@ -12,10 +12,15 @@ def train(model, train_loader, val_loader, test_loader, optim, args, metrics):
     val_hist = []
     test_hist = []
     computed_metrics = [[[], [], []] for _ in range(len(metrics))]
+    train_loss_prev = 1e8
     # loss_reg_loss_ratio_hist = []
     # loss_ratio_hist = []
     for epoch in range(args.num_epochs):
         train_loss_step = 0
+        # if(train_loss_prev - train_loss_step < 1e-5):
+        #     break
+        # else:
+        #     train_loss_prev = train_loss_step
         for index, batch in tqdm(enumerate(train_loader)):
             optim.zero_grad()
             x,y = batch
@@ -70,10 +75,28 @@ def train(model, train_loader, val_loader, test_loader, optim, args, metrics):
             computed_metrics[i][0].append(compute_metric(model, train_loader, args, metric))
             computed_metrics[i][1].append(compute_metric(model, val_loader, args, metric))
             computed_metrics[i][2].append(compute_metric(model, test_loader, args, metric))
+            
+            if (args.wandb):
+                import wandb
+                wandb.log(
+                    {
+                        
+                        f"Training {metric.__class__.__name__}": computed_metrics[i][0][-1],
+                        f"Validation {metric.__class__.__name__}": computed_metrics[i][1][-1],
+                        f"Test {metric.__class__.__name__}": computed_metrics[i][2][-1],
+                        f"Training loss": train_loss,
+                        f"Validation loss": val_loss,
+                        f"Test loss": test_loss,
+                        f"epoch": epoch
+                        
+                    }
+                )
+            
             fig, ax = plt.subplots(3, 1)
             ax[0].plot(computed_metrics[i][0], label="Training metric vs epoch", color="red")
             ax[1].plot(computed_metrics[i][1], label="Validation metric vs epoch", color="blue")
             ax[2].plot(computed_metrics[i][2], label="Test metric vs epoch", color="green")
+            
             # ax[3].plot(loss_ratio_hist, label="Average Loss/Reg Loss Ratio vs epoch", color="purple")
             fig.legend()
             fig.savefig(f"Plots/Metrics/metric_plot_{i}_{epoch}.png")
